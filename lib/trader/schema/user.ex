@@ -24,9 +24,7 @@ defmodule Trader.Schema.User do
       ],
       attrs
     )
-    |> validate_required([:telegram_id, :mode])
-    |> unique_constraint(:telegram_id)
-    |> unique_constraint(:token_hash)
+    |> validate()
   end
 
   def update_changeset(module, attrs) do
@@ -39,9 +37,7 @@ defmodule Trader.Schema.User do
       ],
       attrs
     )
-    |> validate_required([:telegram_id, :mode])
-    |> unique_constraint(:telegram_id)
-    |> unique_constraint(:token_hash)
+    |> validate()
   end
 
   def create(attrs) do
@@ -74,5 +70,12 @@ defmodule Trader.Schema.User do
 
   def with_token(%__MODULE__{token_hash: _} = user) do
     %__MODULE__{user | token: "sometoken"}
+  end
+
+  def validate(changeset) do
+    changeset
+    |> validate_required([:telegram_id, :mode])
+    |> unique_constraint(:telegram_id)
+    |> unique_constraint(:token_hash)
   end
 end
