@@ -26,6 +26,7 @@ defmodule Trader.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:tinkoff_invest, "~> 0.1.0"},
       {:cachex, "~> 3.3"},
+      {:timex, "~> 3.6"},
       # Test
       {:mock, "~> 0.3.0", only: :test}
     ]

@@ -3,7 +3,7 @@ defmodule Trader.Contexts.Cache do
   require Logger
 
   def set(key, value, ttl \\ 60000) do
-    Cachex.put(:api_cache, key, value, ttl)
+    Cachex.put(:api_cache, key, value, ttl: ttl)
   end
 
   def get(key) do
@@ -31,6 +31,5 @@ defmodule Trader.Contexts.Cache do
     set(cache_key, payload)
 
     payload
-    |> IO.inspect(label: "Market payload")
   end
 end
