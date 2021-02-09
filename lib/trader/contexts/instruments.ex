@@ -23,11 +23,10 @@ defmodule Trader.Contexts.Instruments do
   end
 
   def fetch_watching_stocks_prices do
-    {from, to} = from_to(5)
+    {from, to} = from_to(12)
     watching_stocks_figi()
     |> Enum.each(fn figi -> 
       Market.candles(figi, from, to, "1min")
-      |> IO.inspect(label: "Candles")
       |> List.last()
       |> update_stock_price()
     end)
@@ -50,10 +49,9 @@ defmodule Trader.Contexts.Instruments do
 
   defp from_to(amount) do
     now = Timex.now("Europe/Moscow")
-    duration = Timex.Duration.from_minutes(amount * -1)
     from =
       now
-      |> Timex.add(duration)
+      |> Timex.shift(hours: amount * -1)
 
     {from, now}
   end

@@ -2,7 +2,7 @@ defmodule Trader.Contexts.Analytics do
   alias Trader.Contexts.Market
   alias TinkoffInvest.Model.Candle
 
-  def average(figi, unit, amount, interval \\ "day") when unit in [:day, :week] do
+  def average(figi, unit, amount, interval \\ "day") when unit in [:day, :week, :minute] do
     {from, to} = from_to(unit, amount)
 
     figi
@@ -21,6 +21,8 @@ defmodule Trader.Contexts.Analytics do
     {from, now}
   end
 
+  def candle_average([]), do: [-100, -100]
+
   def candle_average(x) when is_list(x), do: Enum.map(x, &candle_average/1)
 
   def candle_average(%Candle{h: h, l: l}) do
@@ -29,6 +31,9 @@ defmodule Trader.Contexts.Analytics do
 
   defp duration(:day, amount), do: Timex.Duration.from_days(amount)
   defp duration(:week, amount), do: Timex.Duration.from_weeks(amount)
+  defp duration(:minute, amount), do: Timex.Duration.from_minutes(amount)
+  defp duration(:second, amount), do: Timex.Duration.from_seconds(amount)
+  defp duration(:millisecond, amount), do: Timex.Duration.from_milliseconds(amount)
 
   defp calc_average(values) do
     divide_by = length(values)
