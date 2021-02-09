@@ -8,6 +8,9 @@ defmodule Trader.Repo.Migrations.CreateUsers do
       add :token_hash, :text
       add :broker_account_id, :string
       add :mode, :string, null: false
+      add :telegram_username, :string
+
+      timestamps()
     end
 
     create unique_index(:users, [:telegram_id])

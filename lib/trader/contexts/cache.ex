@@ -18,6 +18,7 @@ defmodule Trader.Contexts.Cache do
         |> handle_response(cache_key)
 
       result ->
+        Logger.debug("Loaded from cache by key #{cache_key}")
         result
     end
   end

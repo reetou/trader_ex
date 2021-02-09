@@ -9,13 +9,15 @@ defmodule Trader.UserRequest do
     GenServer.start_link(__MODULE__, [], opts)
   end
 
-  def handle_call({:send, fun, opts}, _from, _state) do
-    opts
-    |> Keyword.take([:token, :account_id, :mode])
-    |> change_account_id()
-    |> change_token()
-    |> change_mode()
-    |> execute(fun)
+  def handle_call({:send, fun, opts}, _from, state) do
+    result = 
+      opts
+      |> Keyword.take([:token, :account_id, :mode])
+      |> change_account_id()
+      |> change_token()
+      |> change_mode()
+      |> execute(fun)
+    {:reply, result, state}  
   end
 
   def send(fun, opts) do
@@ -25,7 +27,7 @@ defmodule Trader.UserRequest do
   defp change_account_id(opts) do
     :ok =
       opts
-      |> Keyword.fetch!(:account_id)
+      |> Keyword.get(:account_id)
       |> TinkoffInvest.change_account_id()
 
     opts
@@ -44,12 +46,13 @@ defmodule Trader.UserRequest do
     :ok =
       opts
       |> Keyword.fetch!(:mode)
+      |> String.to_existing_atom()
       |> TinkoffInvest.set_mode()
 
     opts
   end
 
   defp execute(_, fun) do
-    {:ok, fun.()}
+    fun.()
   end
 end

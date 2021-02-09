@@ -42,6 +42,10 @@ defmodule Trader.Contexts.Market do
   end
 
   def search_ticker(ticker) do
-    Market.search_ticker(ticker)
+    cache_key = "search_ticker_#{ticker}"
+
+    Cache.maybe_from_cache(cache_key, fn ->
+      Market.search_ticker(ticker)
+    end)
   end
 end

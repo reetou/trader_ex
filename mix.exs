@@ -24,9 +24,12 @@ defmodule Trader.MixProject do
     [
       {:ecto_sql, "~> 3.0"},
       {:postgrex, ">= 0.0.0"},
-      {:tinkoff_invest, "~> 0.1.0"},
+      {:nadia, "~> 0.7.0"},
+      {:tinkoff_invest, "~> 0.1"},
       {:cachex, "~> 3.3"},
       {:timex, "~> 3.6"},
+      {:poison, "~> 3.1"},
+      {:httpoison, "~> 1.8", override: true},
       # Test
       {:mock, "~> 0.3.0", only: :test}
     ]
