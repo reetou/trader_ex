@@ -2,30 +2,43 @@ defmodule Trader.Telegram.Commands.Portfolio do
   alias Trader.Telegram
   alias Trader.Contexts.User
   alias Trader.Contexts.Portfolio
+  alias Trader.Contexts.Instruments
+  alias Trader.Utils
   require Logger
 
   def command do
-    "портфолио"
+    "портфель"
   end
 
-  def check_register?, do: true
-  def check_credentials?, do: true
+  def checks, do: [:register, :credentials]
+
+  def arguments, do: []
 
   def execute(%{message: %{text: text}} = update) do
     process(update)
   end
 
   def process(%{message: %{chat: %{id: chat_id}, from: %{id: user_id}}}) do
+    case portfolio(user_id) do
+      positions when is_list(positions) -> 
+        txt =
+          positions
+          |> Instruments.from_positions()
+          |> format_positions()
+        Telegram.send_message(chat_id, txt)
+      _ -> 
+        Telegram.send_message(chat_id, "Ошибка, попробуйте позднее")
+    end
+  end
+
+  defp portfolio(user_id) do
     user_id
     |> User.by_telegram()
     |> User.opts()
     |> Portfolio.positions()
     |> case do
-      %{status_code: 200, payload: payload} -> 
-        txt = format_positions(payload)
-        Telegram.send_message(chat_id, txt)
-      _ -> 
-        Telegram.send_message(chat_id, "Ошибка, попробуйте позднее")
+      %{status_code: 200, payload: payload} -> payload
+      e -> {:error, e}
     end
   end
 
@@ -33,19 +46,13 @@ defmodule Trader.Telegram.Commands.Portfolio do
 
   defp format_positions(positions) do
     positions
-    |> Enum.map(&format_position/1)
+    |> Enum.map(&Utils.format_instrument/1)
     |> Enum.join("\n")
+    |> header_msg()
   end
 
-  defp format_position(%{name: name, balance: balance, blocked: blocked, average_position_price: %{currency: currency, value: avg_price}}) do 
-    """
-    - #{name}
-    - Баланс: #{balance}
-    - Заблокировано: #{blocked}
-    - Средняя цена: #{avg_price} #{currency}
-
-    ===
-
-    """
+  defp header_msg(msg) do
+    msg
+    |> String.replace_prefix("", "Купленные бумаги:\n")
   end
 end

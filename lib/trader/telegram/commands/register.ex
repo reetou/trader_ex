@@ -12,8 +12,9 @@ defmodule Trader.Telegram.Commands.Register do
     "регистрация"
   end
 
-  def check_register?, do: false
-  def check_credentials?, do: false
+  def checks, do: []
+
+  def arguments, do: []
 
   def execute(%{message: %{text: text}} = update) do
     process(update)

@@ -13,8 +13,9 @@ defmodule Trader.Telegram.Commands.Stocks do
     "акции"
   end
 
-  def check_register?, do: false
-  def check_credentials?, do: false
+  def checks, do: [:register]
+
+  def arguments, do: []
 
   def execute(%{message: %{text: text}} = update) do
     process(update)

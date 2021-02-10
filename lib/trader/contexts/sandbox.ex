@@ -24,10 +24,12 @@ defmodule Trader.Contexts.Sandbox do
   def set_currency_balance(currency, balance, opts) do
     fn -> Sandbox.set_currency_balance(currency, balance) end
     |> Trader.UserRequest.send(opts)
+    |> TinkoffInvest.payload()
   end
 
   def set_position_balance(figi, balance, opts) do
     fn -> Sandbox.set_position_balance(figi, balance) end
     |> Trader.UserRequest.send(opts)
+    |> TinkoffInvest.payload()
   end
 end

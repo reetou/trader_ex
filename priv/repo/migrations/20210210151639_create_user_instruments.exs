@@ -17,6 +17,7 @@ defmodule Trader.Repo.Migrations.CreateUserInstruments do
       timestamps()
     end
 
+    create unique_index(:user_instruments, [:ticker, :figi])
     create index(:user_instruments, [:ticker])
     create index(:user_instruments, [:figi])
     create index(:user_instruments, [:user_id, :broker_account_id])

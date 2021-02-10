@@ -20,8 +20,9 @@ defmodule Trader.Telegram.Commands.AddInstrument do
     @command
   end
 
-  def check_register?, do: true
-  def check_credentials?, do: true
+  def checks, do: [:register, :credentials]
+
+  def arguments, do: [:ticker]
 
   def execute(%{message: %{text: text}} = update) do
     process(update)

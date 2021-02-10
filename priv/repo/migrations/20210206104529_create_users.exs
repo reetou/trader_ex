@@ -13,7 +13,7 @@ defmodule Trader.Repo.Migrations.CreateUsers do
       timestamps()
     end
 
-    create unique_index(:users, [:telegram_id])
+    create unique_index(:users, [:telegram_id], where: "telegram_id IS NOT NULL")
     create unique_index(:users, [:token_hash])
   end
 end

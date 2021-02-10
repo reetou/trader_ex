@@ -100,16 +100,6 @@ defmodule Trader.Contexts.User do
     end
   end
 
-  def with_registered(%{telegram_id: telegram_id}, module) when is_atom(module) do
-    with true <- module.check_register?(),
-         %User{} <- by_telegram(telegram_id) do
-      :ok
-    else
-      false -> :ok  
-      nil -> {:error, :not_registered}
-    end
-  end
-
   def verify_credentials(%User{} = user, new_token) do
     user
     |> opts()
@@ -143,7 +133,7 @@ defmodule Trader.Contexts.User do
   end
 
   def get_or_create_account(%User{} = user, accs \\ []) do
-    with nil <- Enum.find(accs, fn %{broker_account_type: acc_type} -> acc_type == "Tinkoff" end),
+    with nil <- List.first(accs),
          {:ok, _} <- create_broker_account(user) do
       user
       |> opts()
@@ -172,8 +162,18 @@ defmodule Trader.Contexts.User do
     :ok
   end
 
+  def with_registered(%{telegram_id: telegram_id}, module) when is_atom(module) do
+    with true <- check?(module, :register),
+         %User{} <- by_telegram(telegram_id) do
+      :ok
+    else
+      false -> :ok  
+      nil -> {:error, :not_registered}
+    end
+  end
+
   def with_credentials(%{telegram_id: telegram_id}, module) when is_atom(module) do
-    with true <- module.check_credentials?(),
+    with true <- check?(module, :credentials),
          %User{} = user <- by_telegram(telegram_id),
          :ok <- check_credentials(user) do
       :ok
@@ -181,5 +181,9 @@ defmodule Trader.Contexts.User do
       false -> :ok  
       {:error, reason} = x -> x
     end
+  end
+
+  defp check?(module, check_name) when is_atom(check_name) do 
+    check_name in module.checks()
   end
 end

@@ -8,8 +8,9 @@ defmodule Trader.Telegram.Commands.Account do
     "аккаунт"
   end
 
-  def check_register?, do: true
-  def check_credentials?, do: true
+  def checks, do: [:register, :credentials]
+
+  def arguments, do: []
 
   def execute(%{message: %{text: text}} = update) do
     process(update)
@@ -20,10 +21,14 @@ defmodule Trader.Telegram.Commands.Account do
       user_id
       |> User.by_telegram()
       |> Map.fetch!(:broker_account_id)
+
+      
     Telegram.send_message(chat_id, """
     Аккаунт настроен корректно
 
     Используется счет: #{acc_id}
+
+    Баланс
     """)
   end
 end

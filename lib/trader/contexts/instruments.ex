@@ -33,6 +33,22 @@ defmodule Trader.Contexts.Instruments do
     :ok
   end
 
+  def from_positions(positions) do
+    lots_map = 
+      positions
+      |> Enum.map(fn %{ticker: ticker} = x -> {ticker, x} end)
+      |> Map.new()
+    positions
+    |> Enum.map(fn %{ticker: ticker} -> ticker end)
+    |> Instrument.by_tickers()
+    |> Enum.map(&Map.from_struct/1)
+    |> Enum.map(fn %{ticker: ticker} = x -> 
+      lots_map
+      |> Map.get(ticker)
+      |> merge_position(x)
+    end)
+  end
+
   def update_stock_price(nil), do: nil
 
   def update_stock_price(%{figi: figi, o: o, l: l, h: h, c: c, time: time}) do
@@ -54,5 +70,9 @@ defmodule Trader.Contexts.Instruments do
       |> Timex.shift(hours: amount * -1)
 
     {from, now}
+  end
+
+  defp merge_position(position, instrument) do 
+    Map.merge(position, instrument)
   end
 end

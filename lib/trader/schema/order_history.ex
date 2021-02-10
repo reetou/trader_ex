@@ -1,22 +1,23 @@
-defmodule Trader.Schema.UserInstrument do
+defmodule Trader.Schema.OrderHistory do
   use Ecto.Schema
   import Ecto.Changeset
   import Ecto.Query
   alias Trader.Repo
   alias Trader.Schema.User
-  alias Trader.Schema.Instrument
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  schema "user_instruments" do
+  schema "order_history" do
     field(:name, :string)
     field(:broker_account_id, :string)
     field(:ticker, :string)
     field(:figi, :string)
-    field(:buy_price, :float)
-    field(:sell_price, :float)
-
-    belongs_to(:instrument, Instrument)
+    field(:operation_type, :string)
+    field(:requested_lots, :integer)
+    field(:executed_lots, :integer)
+    field(:price, :float)
+    field(:order_id, :string)
+    
     belongs_to(:user, User)
 
     timestamps()
@@ -27,14 +28,16 @@ defmodule Trader.Schema.UserInstrument do
     |> cast(
       attrs,
       [
-        :instrument_id,
-        :name,
+        :order_id,
         :user_id,
+        :name,
         :broker_account_id,
         :ticker,
         :figi,
-        :buy_price,
-        :sell_price
+        :operation_type,
+        :requested_lots,
+        :executed_lots,
+        :price
       ]
     )
     |> validate()
@@ -43,16 +46,7 @@ defmodule Trader.Schema.UserInstrument do
   def create(attrs) do
     %__MODULE__{}
     |> changeset(attrs)
-    |> Repo.insert!(
-      on_conflict: :nothing,
-      conflict_target: [:ticker, :figi]
-    )
-  end
-
-  def update(%__MODULE__{} = module, attrs) do
-    module
-    |> changeset(attrs)
-    |> Repo.update!()
+    |> Repo.insert!()
   end
 
   def by(opts) do
@@ -62,15 +56,7 @@ defmodule Trader.Schema.UserInstrument do
 
   def validate(changeset) do
     changeset
-    |> validate_required([:name, :broker_account_id, :ticker, :figi])
-  end
-
-  def all_figi do
-    __MODULE__
-    |> select([i], [i.figi])
-    |> distinct([:ticker])
-    |> limit(2)
-    |> Repo.all()
-    |> List.flatten()
+    |> validate_required([:order_id, :user_id, :name, :broker_account_id, :ticker, :figi, :operation_type, :executed_lots, :requested_lots])
+    |> validate_inclusion(:operation_type, ["buy", "sell"])
   end
 end

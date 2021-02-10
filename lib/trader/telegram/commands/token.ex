@@ -29,21 +29,22 @@ defmodule Trader.Telegram.Commands.Token do
     @command
   end
 
-  def check_register?, do: true
-  def check_credentials?, do: false
+  def checks, do: [:register]
+
+  def arguments, do: [:token]
 
   def execute(%{message: %{text: text}} = update) do
     process(update)
   end
 
-  def process(%{message: %{text: @command <> " " <> token, chat: %{id: chat_id}, from: %{id: user_id}} = message} = update) do
+  def process(%{trader_args: [token: nil], message: %{chat: %{id: chat_id}}}) do
+    Telegram.send_message(chat_id, @msg)
+  end
+
+  def process(%{trader_args: [token: token], message: %{chat: %{id: chat_id}, from: %{id: user_id}}}) do
     user_id
     |> User.by_telegram()
     |> write_credentials(token, chat_id)
-  end
-
-  def process(%{message: %{text: text, chat: %{id: chat_id}, from: %{id: user_id}} = message} = update) do
-    Telegram.send_message(chat_id, @msg)
   end
 
   defp write_credentials(user, token, chat_id) do

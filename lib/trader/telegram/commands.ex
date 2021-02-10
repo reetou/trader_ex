@@ -6,7 +6,10 @@ defmodule Trader.Telegram.Commands do
   alias Trader.Telegram.Commands.Token
   alias Trader.Telegram.Commands.Instruments
   alias Trader.Telegram.Commands.AddInstrument
+  alias Trader.Telegram.Commands.Buy
   alias Trader.Telegram.Commands.Stocks
+  alias Trader.Telegram.Commands.Balance
+  alias Trader.Telegram.Commands.Portfolio
   alias Trader.Contexts.User
 
   @commands_map %{
@@ -16,6 +19,9 @@ defmodule Trader.Telegram.Commands do
     Instruments.command() => Instruments,
     Stocks.command() => Stocks,
     AddInstrument.command() => AddInstrument,
+    Buy.command() => Buy,
+    Balance.command() => Balance,
+    Portfolio.command() => Portfolio
   }
 
   @commands Enum.map(@commands_map, fn {k, v} -> k end)
@@ -77,6 +83,21 @@ defmodule Trader.Telegram.Commands do
     true
   end
 
+  defp put_args(%{message: %{text: text}} = update, cmd_args_keys) do
+    args = 
+      text
+      |> String.split()
+      |> Enum.slice(1..10)
+    cmd_args = 
+      cmd_args_keys
+      |> Enum.with_index()
+      |> Enum.map(fn {k, idx} -> 
+        {k, Enum.at(args, idx)}
+      end)
+    Logger.debug("Command: #{text}, args: #{inspect cmd_args}")  
+    Map.put(update, :trader_args, cmd_args)
+  end
+
   defp handle_message(
     %{
       message: %{
@@ -95,7 +116,10 @@ defmodule Trader.Telegram.Commands do
     with module when not is_nil(module) <- Map.get(@commands_map, cmd),
          :ok <- User.with_registered(%{telegram_id: user_id}, module),
          :ok <- User.with_credentials(%{telegram_id: user_id}, module) do
-      module.execute(update)
+      args = module.arguments()  
+      update
+      |> put_args(args)
+      |> module.execute()
     else
       nil -> 
         command_not_found(chat_id)

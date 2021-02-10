@@ -64,7 +64,7 @@ defmodule Trader.Schema.Instrument do
   def by_tickers([]), do: []
 
   def by_tickers(tickers) when is_list(tickers) do
-    Instrument
+    __MODULE__
     |> where([i], i.ticker in ^tickers)
     |> Repo.all()
   end
