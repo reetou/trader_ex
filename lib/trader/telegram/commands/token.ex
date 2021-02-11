@@ -3,10 +3,12 @@ defmodule Trader.Telegram.Commands.Token do
   alias Trader.Contexts.User
   require Logger
 
+  @command "/token"
+
   @msg """
   Напишите мне токен, который Вы сгенерировали на сайте Тинькофф.Инвестиции, в формате:
 
-  `токен MY_TOKEN_HERE`
+  #{@command} MY_TOKEN_HERE
 
   Можно использовать реальный токен или токен песочницы - с токеном песочницы ваши реальные средства не будут расходоваться
   """
@@ -22,8 +24,6 @@ defmodule Trader.Telegram.Commands.Token do
   @token_error_msg """
   Токен не валидный, попробуйте позже или попробуйте другой токен.
   """
-
-  @command "токен"
 
   def command do
     @command

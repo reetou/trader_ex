@@ -4,11 +4,13 @@ defmodule Trader.Telegram.Commands.Account do
   alias Trader.Telegram.Commands.Token
   require Logger
 
+  @command "/info"
+
   def command do
-    "аккаунт"
+    @command
   end
 
-  def checks, do: [:register, :credentials]
+  def checks, do: [:register, :credentials, :account]
 
   def arguments, do: []
 
@@ -28,7 +30,6 @@ defmodule Trader.Telegram.Commands.Account do
 
     Используется счет: #{acc_id}
 
-    Баланс
     """)
   end
 end

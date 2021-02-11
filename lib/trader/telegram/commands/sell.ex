@@ -1,4 +1,4 @@
-defmodule Trader.Telegram.Commands.Buy do
+defmodule Trader.Telegram.Commands.Sell do
   alias Trader.Contexts.User
   alias Trader.Contexts.Orders
   alias Trader.Contexts.Instruments
@@ -6,7 +6,7 @@ defmodule Trader.Telegram.Commands.Buy do
   alias Trader.Telegram.Commands.Portfolio
   require Logger
 
-  @command "/buy"
+  @command "/sell"
 
   @init_msg """
   Пример использования команды: #{@command} _TICKER_ _LOTS_
@@ -18,7 +18,7 @@ defmodule Trader.Telegram.Commands.Buy do
 
   @bad_lots_msg "Неверное значение количества лотов. Должно быть целым числом, например: 1"
 
-  @success_msg "Покупка совершена успешно. Данные можно просмотреть командой #{Portfolio.command()}"
+  @success_msg "Продажа совершена успешно. Данные просмотреть командой #{Portfolio.command()}"
 
   @no_instrument_msg "Бумага не найдена"
 
@@ -33,7 +33,7 @@ defmodule Trader.Telegram.Commands.Buy do
   end
 
   def process(%{trader_args: [ticker: ticker, lots: lots], message: %{chat: %{id: chat_id}, from: %{id: user_id}}}) do
-    case buy_stock(user_id, ticker, lots) do
+    case sell_stock(user_id, ticker, lots) do
       {:ok, order} -> success(chat_id, order)
       {:error, :bad_lots_amount} -> error(chat_id, @bad_lots_msg)
       {:error, %{payload: %{message: error_message}}} -> error(chat_id, error_message)
@@ -44,11 +44,11 @@ defmodule Trader.Telegram.Commands.Buy do
     end
   end
   
-  def buy_stock(user_id, ticker, lots) do
+  def sell_stock(user_id, ticker, lots) do
     with %{} = user <- User.by_telegram(user_id),
          {:ok, lots} <- parse_lots(lots),
          {:ok, ticker} <- parse_ticker(ticker),
-         {:ok, order} <- Orders.buy_market(user, ticker, lots) do
+         {:ok, order} <- Orders.sell_market(user, ticker, lots) do
       {:ok, order}
     else
       {:error, _} = e -> e

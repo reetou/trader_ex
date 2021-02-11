@@ -12,6 +12,7 @@ defmodule Trader.Application do
       # Starts a worker by calling: Trader.Worker.start_link(arg)
       # {Trader.Worker, arg}
       {Trader.Repo, []},
+      {Trader.Scheduler, []},
       {Telegram.Poller, []},
       {Telegram.Matcher, []},
       {Trader.UserRequest, [name: Trader.UserRequest]},

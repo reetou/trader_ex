@@ -5,6 +5,8 @@ defmodule Trader.Telegram.Commands.Instruments do
   alias Trader.Utils
   require Logger
 
+  @command "/all"
+
   @title """
   Отслеживаемые бумаги:
 
@@ -17,7 +19,7 @@ defmodule Trader.Telegram.Commands.Instruments do
   """
 
   def command do
-    "бумаги"
+    @command
   end
 
   def checks, do: [:register, :credentials]

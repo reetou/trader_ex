@@ -15,7 +15,10 @@ defmodule Trader.Schema.OrderHistory do
     field(:operation_type, :string)
     field(:requested_lots, :integer)
     field(:executed_lots, :integer)
-    field(:price, :float)
+    field(:o, :float)
+    field(:c, :float)
+    field(:h, :float)
+    field(:l, :float)
     field(:order_id, :string)
     
     belongs_to(:user, User)
@@ -37,7 +40,10 @@ defmodule Trader.Schema.OrderHistory do
         :operation_type,
         :requested_lots,
         :executed_lots,
-        :price
+        :o,
+        :c,
+        :h,
+        :l
       ]
     )
     |> validate()
@@ -56,7 +62,7 @@ defmodule Trader.Schema.OrderHistory do
 
   def validate(changeset) do
     changeset
-    |> validate_required([:order_id, :user_id, :name, :broker_account_id, :ticker, :figi, :operation_type, :executed_lots, :requested_lots])
+    |> validate_required([:o, :c, :h, :l, :order_id, :user_id, :name, :broker_account_id, :ticker, :figi, :operation_type, :executed_lots, :requested_lots])
     |> validate_inclusion(:operation_type, ["buy", "sell"])
   end
 end

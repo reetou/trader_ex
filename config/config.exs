@@ -6,4 +6,12 @@ config :trader,
 config :nadia,
   token: System.fetch_env!("TELEGRAM_TOKEN")
 
+config :trader, Trader.Scheduler,
+  jobs: [
+    # Every 2 seconds
+    fetch_watching_stocks: [
+      schedule: {:extended, "*/2"},
+      task: {Trader.Contexts.Instruments, :fetch_watching_stocks_prices, []},
+    ]
+  ]
 import_config "#{Mix.env()}.exs"

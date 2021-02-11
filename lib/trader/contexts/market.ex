@@ -26,11 +26,9 @@ defmodule Trader.Contexts.Market do
   end
 
   def candles(figi, from, to, interval \\ "1min") do
-    cache_key = {figi, from, to, interval}
-
-    Cache.maybe_from_cache(cache_key, fn ->
-      Market.candles(figi, from, to, interval)
-    end)
+    figi
+    |> Market.candles(from, to, interval)
+    |> TinkoffInvest.payload()
   end
 
   def search_figi(figi) do

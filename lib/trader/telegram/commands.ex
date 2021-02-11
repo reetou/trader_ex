@@ -2,12 +2,13 @@ defmodule Trader.Telegram.Commands do
   require Logger
   alias Trader.Telegram
   alias Trader.Telegram.Commands.Register
+  alias Trader.Telegram.Commands.Unregister
   alias Trader.Telegram.Commands.Account
   alias Trader.Telegram.Commands.Token
   alias Trader.Telegram.Commands.Instruments
   alias Trader.Telegram.Commands.AddInstrument
   alias Trader.Telegram.Commands.Buy
-  alias Trader.Telegram.Commands.Stocks
+  alias Trader.Telegram.Commands.Sell
   alias Trader.Telegram.Commands.Balance
   alias Trader.Telegram.Commands.Portfolio
   alias Trader.Contexts.User
@@ -17,11 +18,12 @@ defmodule Trader.Telegram.Commands do
     Account.command() => Account,
     Token.command() => Token,
     Instruments.command() => Instruments,
-    Stocks.command() => Stocks,
     AddInstrument.command() => AddInstrument,
     Buy.command() => Buy,
     Balance.command() => Balance,
-    Portfolio.command() => Portfolio
+    Portfolio.command() => Portfolio,
+    Unregister.command() => Unregister,
+    Sell.command() => Sell
   }
 
   @commands Enum.map(@commands_map, fn {k, v} -> k end)
@@ -38,7 +40,15 @@ defmodule Trader.Telegram.Commands do
 
   @not_registered_msg "Для использования команды нужно зарегистрироваться: #{Register.command()}"
 
+  @no_account_msg "Счет не найден, введите команду #{Token.command()} для исправления"
+
   @no_credentials_msg "Для использования команды нужно создать аккаунт в Тинькофф.Инвестициях: введите команду #{Token.command()}"
+
+  @error_messages %{
+    no_account: @no_account_msg,
+    not_registered: @not_registered_msg,
+    no_credentials: @no_credentials_msg
+  }
 
   @info_msg """
   Доступные команды:
@@ -112,10 +122,13 @@ defmodule Trader.Telegram.Commands do
       text
       |> String.split(" ")
       |> List.first()
-    User.maybe_update_telegram_username(user_id, username)    
+    Task.start(fn -> 
+      User.maybe_update_telegram_username(user_id, username)
+    end)
     with module when not is_nil(module) <- Map.get(@commands_map, cmd),
          :ok <- User.with_registered(%{telegram_id: user_id}, module),
-         :ok <- User.with_credentials(%{telegram_id: user_id}, module) do
+         :ok <- User.with_credentials(%{telegram_id: user_id}, module),
+         :ok <- User.with_valid_account(%{telegram_id: user_id}, module) do
       args = module.arguments()  
       update
       |> put_args(args)
@@ -123,15 +136,24 @@ defmodule Trader.Telegram.Commands do
     else
       nil -> 
         command_not_found(chat_id)
-      {:error, :no_credentials} ->
-        Telegram.send_message(chat_id, @no_credentials_msg)  
-        
-      {:error, :not_registered} -> 
-        Telegram.send_message(chat_id, @not_registered_msg)  
+      {:error, e} ->
+        error_message(chat_id, e)
     end
   end
 
   defp command_not_found(chat_id) do
     Telegram.send_message(chat_id, @command_not_found_msg)
+  end
+
+  defp error_message(chat_id, code) do 
+    case Map.get(@error_messages, code) do 
+      msg when is_binary(msg) ->
+        Telegram.send_message(chat_id, msg)
+      _ when is_atom(code) -> 
+        Telegram.send_message(chat_id, "Неизвестная ошибка: код: #{code}")  
+      _ when is_atom(code) -> 
+        Logger.error("Unhandled error: #{inspect code}")
+        Telegram.send_message(chat_id, "Неизвестная ошибка")  
+    end
   end
 end

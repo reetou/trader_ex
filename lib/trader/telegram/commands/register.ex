@@ -8,8 +8,10 @@ defmodule Trader.Telegram.Commands.Register do
   @already_registered_msg "Вы уже зарегистрированы. Введите команду #{Account.command()} для продолжения"
   @register_success "Успех! Вы зарегистрированы. Введите команду #{Account.command()} для продолжения"
 
+  @command "/register"
+
   def command do 
-    "регистрация"
+    @command
   end
 
   def checks, do: []

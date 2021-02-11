@@ -6,7 +6,7 @@ defmodule Trader.Telegram.Commands.Balance do
   alias Trader.Telegram.Commands.Token
   require Logger
 
-  @command "баланс"
+  @command "/balance"
 
   @init_msg """
   Чтобы установить баланс, напишите:
@@ -27,7 +27,7 @@ defmodule Trader.Telegram.Commands.Balance do
   
   def command, do: @command
 
-  def checks, do: [:register, :credentials]
+  def checks, do: [:register, :credentials, :account]
 
   def arguments, do: [:security, :new_balance]
 
@@ -136,9 +136,11 @@ defmodule Trader.Telegram.Commands.Balance do
     
       Вы находитесь в режиме песочницы и можете пополнить свой баланс когда угодно
 
-      Пример пополнения баланса:
+      Пример изменения баланса:
       
       #{@command} USD 500
+
+      Установит баланс валюты USD на 500.00
       """
     String.replace_suffix(msg, "", x)  
   end

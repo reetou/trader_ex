@@ -11,7 +11,10 @@ defmodule Trader.Repo.Migrations.CreateOrderHistory do
       add :operation_type, :string, null: false
       add :requested_lots, :integer, null: false
       add :executed_lots, :integer, null: false
-      add :price, :float
+      add :o, :float
+      add :c, :float
+      add :h, :float
+      add :l, :float
       add :order_id, :text, null: false
 
       add :user_id, references(:users, [type: :binary_id, on_delete: :delete_all]), null: false

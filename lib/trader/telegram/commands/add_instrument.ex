@@ -4,16 +4,16 @@ defmodule Trader.Telegram.Commands.AddInstrument do
   alias Trader.Telegram
   require Logger
 
-  @command "добавить"
+  @command "/track"
 
   @init_msg """
   Добавьте бумагу командой:
 
-  добавить _STOCK_TICKER_
+  #{@command} _STOCK_TICKER_
 
   Пример для Apple:
 
-  добавить AAPL
+  #{@command} AAPL
   """
 
   def command do

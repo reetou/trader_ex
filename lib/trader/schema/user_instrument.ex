@@ -13,8 +13,6 @@ defmodule Trader.Schema.UserInstrument do
     field(:broker_account_id, :string)
     field(:ticker, :string)
     field(:figi, :string)
-    field(:buy_price, :float)
-    field(:sell_price, :float)
 
     belongs_to(:instrument, Instrument)
     belongs_to(:user, User)
@@ -32,9 +30,7 @@ defmodule Trader.Schema.UserInstrument do
         :user_id,
         :broker_account_id,
         :ticker,
-        :figi,
-        :buy_price,
-        :sell_price
+        :figi
       ]
     )
     |> validate()

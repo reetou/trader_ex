@@ -67,6 +67,10 @@ defmodule Trader.Schema.User do
     |> with_token()
   end
 
+  def delete(%__MODULE__{} = module) do
+    Repo.delete(module)
+  end
+
   def by_telegram_id(id) do
     __MODULE__
     |> Repo.get_by(telegram_id: id)

@@ -4,13 +4,16 @@ defmodule Trader.Telegram.Commands.Portfolio do
   alias Trader.Contexts.Portfolio
   alias Trader.Contexts.Instruments
   alias Trader.Utils
+  alias Trader.Telegram.Commands.Token
   require Logger
 
+  @command "/profile"
+
   def command do
-    "портфель"
+    @command
   end
 
-  def checks, do: [:register, :credentials]
+  def checks, do: [:register, :credentials, :account]
 
   def arguments, do: []
 

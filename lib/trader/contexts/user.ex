@@ -19,6 +19,15 @@ defmodule Trader.Contexts.User do
 
   def account_id(%User{broker_account_id: account_id}), do: account_id
 
+  def account(accs, account_id) do 
+    accs
+    |> Enum.find(fn %{broker_account_id: acc_id} -> acc_id == account_id end)
+    |> case do 
+      nil -> {:error, :no_account}
+      %{} = acc -> {:ok, acc}
+    end
+  end
+
   def opts(%User{mode: mode} = user) do
     [
       mode: mode,
@@ -61,9 +70,7 @@ defmodule Trader.Contexts.User do
           instrument_id: instrument_id,
           name: name,
         })
-        Task.start(fn -> 
-          Instruments.fetch_watching_stocks_prices()
-        end)
+        Instruments.fetch_watching_stocks_prices()
         {:ok, result}
     end
   end
@@ -100,6 +107,12 @@ defmodule Trader.Contexts.User do
     end
   end
 
+  def delete(%{telegram_id: telegram_id}) do
+    telegram_id
+    |> by_telegram()
+    |> User.delete()
+  end
+
   def verify_credentials(%User{} = user, new_token) do
     user
     |> opts()
@@ -110,6 +123,18 @@ defmodule Trader.Contexts.User do
         :error
       %Api.Response{payload: accs, status_code: 200} -> 
         {:ok, accs}
+    end
+  end
+
+  def verify_account(%User{broker_account_id: broker_account_id} = user) do
+    user
+    |> opts()
+    |> all_accounts()
+    |> case do
+      %Api.Response{payload: %Api.Error{}} -> 
+        :error
+      %Api.Response{payload: accs, status_code: 200} -> 
+        account(accs, broker_account_id)
     end
   end
 
@@ -160,6 +185,18 @@ defmodule Trader.Contexts.User do
 
   def check_credentials(%User{token_hash: token_hash}) do
     :ok
+  end
+
+  def with_valid_account(%{telegram_id: telegram_id}, module) when is_atom(module) do
+    with true <- check?(module, :account),
+         %User{} = user <- by_telegram(telegram_id),
+         {:ok, account} <- verify_account(user) do
+      :ok
+    else
+      false -> :ok  
+      nil -> {:error, :not_registered}
+      {:error, _} = e -> e
+    end
   end
 
   def with_registered(%{telegram_id: telegram_id}, module) when is_atom(module) do

@@ -29,6 +29,7 @@ defmodule Trader.MixProject do
       {:cachex, "~> 3.3"},
       {:timex, "~> 3.6"},
       {:poison, "~> 3.1"},
+      {:quantum, "~> 3.0"},
       {:httpoison, "~> 1.8", override: true},
       # Test
       {:mock, "~> 0.3.0", only: :test}
