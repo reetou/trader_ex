@@ -21,6 +21,8 @@ end
 - [ ] Add create limit order to use stop loss
 - [ ] Add create limit order to use take profit just in case
 - [ ] Add more algos
+- [ ] Add last price on order history
+- [ ] When buying, use limit order. And if limit order has not succeeded - cancel it.
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
