@@ -13,6 +13,7 @@ defmodule Trader.Application do
       # {Trader.Worker, arg}
       {Trader.Repo, []},
       {Trader.Scheduler, []},
+      {Trader.Historical.DecisionCollector, [name: Trader.Historical.DecisionCollector]},
       {Telegram.Poller, []},
       {Telegram.Matcher, []},
       {Trader.UserRequest, [name: Trader.UserRequest]},

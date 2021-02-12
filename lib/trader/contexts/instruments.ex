@@ -22,6 +22,14 @@ defmodule Trader.Contexts.Instruments do
     UserInstrument.all_figi()
   end
 
+  def fetch_price(%Instrument{} = instrument, date) do 
+    {from, to} = from_to(date, 6)
+    instrument
+    |> Map.fetch!(:figi)
+    |> Market.candles(from, to, "hour")
+    |> List.last()
+  end
+
   def fetch_watching_stocks_prices do
     {from, to} = from_to(12)
     watching_stocks_figi()
@@ -63,13 +71,18 @@ defmodule Trader.Contexts.Instruments do
     })
   end
 
-  defp from_to(amount) do
-    now = Timex.now("Europe/Moscow")
+  defp from_to(date, amount) do
+    to = date
     from =
-      now
+      to
       |> Timex.shift(hours: amount * -1)
 
-    {from, now}
+    {from, to}
+  end
+
+  defp from_to(amount) do
+    Timex.now("Europe/Moscow")
+    |> from_to(amount)
   end
 
   defp merge_position(position, instrument) do 

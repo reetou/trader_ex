@@ -48,4 +48,10 @@ defmodule Trader.Utils do
       Последнее обновление: #{format_time(time)} 
     """
   end
+
+  def duration(:day, amount), do: Timex.Duration.from_days(amount)
+  def duration(:week, amount), do: Timex.Duration.from_weeks(amount)
+  def duration(:minute, amount), do: Timex.Duration.from_minutes(amount)
+  def duration(:second, amount), do: Timex.Duration.from_seconds(amount)
+  def duration(:millisecond, amount), do: Timex.Duration.from_milliseconds(amount)
 end
