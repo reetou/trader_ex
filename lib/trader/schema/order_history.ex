@@ -20,6 +20,7 @@ defmodule Trader.Schema.OrderHistory do
     field(:h, :float)
     field(:l, :float)
     field(:order_id, :string)
+    field(:closed, :boolean, default: false)
     
     belongs_to(:user, User)
 
