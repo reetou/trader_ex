@@ -15,14 +15,15 @@ def deps do
 end
 ```
 
-- [ ] Add cron for checking prices regularly for tracked stocks
+- [x] Add cron for checking prices regularly for tracked stocks
 - [ ] Add cron for checking algo decision for tracked stocks
-- [ ] Add sell
+- [x] Add sell
 - [ ] Add create limit order to use stop loss
 - [ ] Add create limit order to use take profit just in case
 - [ ] Add more algos
-- [ ] Add last price on order history
+- [x] Add last price on order history
 - [ ] When buying, use limit order. And if limit order has not succeeded - cancel it.
+- [ ] Store history cache data using Cachex instead of local state
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can

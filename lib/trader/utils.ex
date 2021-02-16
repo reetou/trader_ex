@@ -54,4 +54,11 @@ defmodule Trader.Utils do
   def duration(:minute, amount), do: Timex.Duration.from_minutes(amount)
   def duration(:second, amount), do: Timex.Duration.from_seconds(amount)
   def duration(:millisecond, amount), do: Timex.Duration.from_milliseconds(amount)
+
+  def enough_money?(balance, price, lots) do 
+    cond do 
+      price * lots < balance -> true
+      true -> false
+    end
+  end
 end

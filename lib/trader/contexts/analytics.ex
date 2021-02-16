@@ -14,7 +14,7 @@ defmodule Trader.Contexts.Analytics do
   end
 
   def from_to(unit, amount) do
-    now = Timex.now("Europe/Moscow")
+    now = Timex.now("Etc/UTC")
 
     from =
       now

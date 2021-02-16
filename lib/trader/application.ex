@@ -14,6 +14,7 @@ defmodule Trader.Application do
       {Trader.Repo, []},
       {Trader.Scheduler, []},
       {Trader.Historical.DecisionCollector, [name: Trader.Historical.DecisionCollector]},
+      {Trader.Historical.HistoryCache, [name: Trader.Historical.HistoryCache]},
       {Telegram.Poller, []},
       {Telegram.Matcher, []},
       {Trader.UserRequest, [name: Trader.UserRequest]},

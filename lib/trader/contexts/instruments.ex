@@ -1,7 +1,9 @@
 defmodule Trader.Contexts.Instruments do
   alias Trader.Contexts.Market
+  alias Trader.Historical.HistoryCache
   alias Trader.Schema.Instrument
   alias Trader.Schema.UserInstrument
+  alias TinkoffInvest.HistoricalData
 
   def fill_stocks do
     Market.stocks()
@@ -23,10 +25,14 @@ defmodule Trader.Contexts.Instruments do
   end
 
   def fetch_price(%Instrument{} = instrument, date) do 
-    {from, to} = from_to(date, 6)
+    {from, to} = from_to(date, 1)
     instrument
     |> Map.fetch!(:figi)
-    |> Market.candles(from, to, "hour")
+    |> HistoryCache.load(from, to, "1min")
+    |> Enum.filter(fn %{time: time} ->
+      before_or_equal?(time, to)
+    end)
+    |> Enum.to_list()
     |> List.last()
   end
 
@@ -81,11 +87,17 @@ defmodule Trader.Contexts.Instruments do
   end
 
   defp from_to(amount) do
-    Timex.now("Europe/Moscow")
+    Timex.now("Etc/UTC")
     |> from_to(amount)
   end
 
   defp merge_position(position, instrument) do 
     Map.merge(position, instrument)
+  end
+
+  defp before_or_equal?(date_string, %DateTime{} = date) do 
+    date = Timex.shift(date, minutes: 1)
+    {:ok, parsed} = Timex.parse(date_string, "{ISO:Extended}")
+    Timex.before?(parsed, date)
   end
 end
