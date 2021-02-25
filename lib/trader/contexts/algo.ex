@@ -14,6 +14,7 @@ defmodule Trader.Contexts.Algo do
   }
 
   def iterate_all do 
+    Logger.info("Starting iterate...")
     Schema.UserAlgo.all_active()
     |> Enum.map(fn %{ticker: ticker, algo: algo, user_id: user_id} -> 
       %Schema.User{} = user = Schema.User.get(user_id)
