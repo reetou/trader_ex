@@ -7,5 +7,6 @@ config :tinkoff_invest,
   logs_enabled: false
 
 config :trader, Trader.Repo,
+  log: false,
   url: System.fetch_env!("DATABASE_URL"),
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
