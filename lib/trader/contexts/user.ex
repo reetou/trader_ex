@@ -48,7 +48,7 @@ defmodule Trader.Contexts.User do
     end
   end
 
-  def create_broker_account(%User{mode: "production"} = user) do
+  def create_broker_account(%User{mode: "production"}) do
     {:error, :wrong_mode}
   end
 
@@ -155,6 +155,29 @@ defmodule Trader.Contexts.User do
         %User{} = user = User.update(user, %{broker_account_id: acc_id})
         {:ok, user}
     end
+  end
+
+  def algos(%{telegram_id: telegram_id}) do 
+    telegram_id
+    |> by_telegram()
+    |> User.with_algos()
+    |> Map.fetch!(:algos)
+  end
+
+  def active_algos(user) do 
+    Schema.UserAlgo.all_active_for_user(user.id)
+  end
+
+  def add_algo(%{telegram_id: telegram_id, ticker: ticker, algo: algo}) when algo in ["buy_within"] do 
+    %{id: user_id} = by_telegram(telegram_id)
+    %{} = Schema.UserAlgo.create(%{user_id: user_id, ticker: ticker, balance_limit: 1000, algo: algo})
+    :ok
+  end
+
+  def remove_algo(%{telegram_id: telegram_id, ticker: ticker, algo: algo}) when algo in ["buy_within"] do 
+    %{id: user_id} = by_telegram(telegram_id)
+    Schema.UserAlgo.delete(user_id, ticker, algo)
+    :ok
   end
 
   def get_or_create_account(%User{} = user, accs \\ []) do

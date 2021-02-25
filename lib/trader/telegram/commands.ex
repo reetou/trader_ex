@@ -11,6 +11,7 @@ defmodule Trader.Telegram.Commands do
   alias Trader.Telegram.Commands.Sell
   alias Trader.Telegram.Commands.Balance
   alias Trader.Telegram.Commands.Portfolio
+  alias Trader.Telegram.Commands.Algo
   alias Trader.Contexts.User
 
   @commands_map %{
@@ -23,7 +24,8 @@ defmodule Trader.Telegram.Commands do
     Balance.command() => Balance,
     Portfolio.command() => Portfolio,
     Unregister.command() => Unregister,
-    Sell.command() => Sell
+    Sell.command() => Sell,
+    Algo.command() => Algo
   }
 
   @commands Enum.map(@commands_map, fn {k, v} -> k end)

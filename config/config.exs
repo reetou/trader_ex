@@ -12,6 +12,10 @@ config :trader, Trader.Scheduler,
     fetch_watching_stocks: [
       schedule: {:extended, "*/2"},
       task: {Trader.Contexts.Instruments, :fetch_watching_stocks_prices, []},
+    ],
+    iterate_algos: [
+      schedule: "* * * * *",
+      task: {Trader.Contexts.Algo, :iterate_all, []},
     ]
   ]
 import_config "#{Mix.env()}.exs"

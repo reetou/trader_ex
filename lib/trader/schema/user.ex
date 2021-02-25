@@ -3,6 +3,7 @@ defmodule Trader.Schema.User do
   import Ecto.Changeset
   alias Trader.Repo
   alias Trader.Schema.UserInstrument
+  alias Trader.Schema.UserAlgo
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -16,6 +17,7 @@ defmodule Trader.Schema.User do
     field(:token, :string, virtual: true)
 
     has_many(:instruments, UserInstrument)
+    has_many(:algos, UserAlgo)
 
     timestamps()
   end
@@ -90,6 +92,13 @@ defmodule Trader.Schema.User do
   def with_instruments(%__MODULE__{} = module) do
     module
     |> Repo.preload([instruments: :instrument])
+  end
+
+  def with_algos(nil), do: nil
+
+  def with_algos(%__MODULE__{} = module) do
+    module
+    |> Repo.preload([:algos])
   end
 
   def validate(changeset) do

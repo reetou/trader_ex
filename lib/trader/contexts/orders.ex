@@ -68,4 +68,8 @@ defmodule Trader.Contexts.Orders do
     |> Map.merge(Map.from_struct(instrument))
     |> Map.merge(extra)
   end
+
+  def order_history(%{id: user_id}, ticker) do 
+    OrderHistory.by_user_id(user_id, ticker)
+  end
 end

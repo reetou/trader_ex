@@ -6,23 +6,31 @@ defmodule Trader.Algo.BuyWithin do
   alias Trader.Utils
   require Logger
 
-  @moduledoc """
-  Buy if min price by last 14 days (with day interval) is lower for less than 15%
-
-  Sell when profit is >= 2% and > 80 cents
-  """
+  @time_period 14
 
   @interval "day"
-
-  @time_period 14
 
   @lots_amount 5
 
   @max_increase 15
 
+  @moduledoc """
+  Buy if min price by last #{@time_period} days (with #{@interval} interval) is lower for less than #{@max_increase}%
+
+  Sell when profit is >= 2% and > 80 cents
+  """
+
   @type operation_type() :: :buy | :sell
   
   @type decision_result() :: {operation_type(), integer()} | :ignore | {:limit, operation_type(), integer(), float()}
+
+  def name, do: "buy_within"
+
+  def description, do: """
+  Если минимальная цена за последние #{@time_period} дней с интервалом #{@interval} уменьшилась не более чем на 15% - покупаем #{@lots_amount} лотов по маркету
+  
+  Если профит >= 2% и более 80 центов (чтобы снизить вероятность implementation shortfall) - продаем
+  """
   
   @spec decision(map(), integer(), float(), float(), DateTime.t(), float()) :: decision_result()
   def decision(%{ticker: ticker, figi: figi}, lots, price, balance, date, bought_price) do 

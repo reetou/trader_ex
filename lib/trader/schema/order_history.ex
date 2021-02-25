@@ -61,6 +61,12 @@ defmodule Trader.Schema.OrderHistory do
     |> Repo.get_by(opts)
   end
 
+  def by_user_id(id, ticker) do 
+    __MODULE__
+    |> where([i], i.user_id == ^id and i.ticker == ^ticker)
+    |> Repo.all()
+  end
+
   def validate(changeset) do
     changeset
     |> validate_required([:o, :c, :h, :l, :order_id, :user_id, :name, :broker_account_id, :ticker, :figi, :operation_type, :executed_lots, :requested_lots])
