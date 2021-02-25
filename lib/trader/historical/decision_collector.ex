@@ -13,7 +13,7 @@ defmodule Trader.Historical.DecisionCollector do
     GenServer.start_link(__MODULE__, [], opts)
   end
 
-  def handle_call({:collect, {name, ticker, lots, decision, o, c, balance} = x}, _from, state) do 
+  def handle_call({:collect, {name, ticker, lots, decision, o, c, balance} = x, date}, _from, state) do 
     result = 
       state
       |> Map.get(name, %{
@@ -23,9 +23,6 @@ defmodule Trader.Historical.DecisionCollector do
         deals: [],
         suffix: DateTime.utc_now() |> DateTime.to_unix()
       })
-    x
-    |> log_intent()
-    |> log_file(result.suffix)
     result = 
       result 
       |> last_price(x)
@@ -35,6 +32,10 @@ defmodule Trader.Historical.DecisionCollector do
       |> average_lot_price()
       |> final_balance()
       |> deals_count()
+
+    x
+    |> log_intent()
+    |> log_file(result, date)  
 
     {:reply, {:ok, result}, Map.put(state, name, result)}
   end
@@ -48,8 +49,8 @@ defmodule Trader.Historical.DecisionCollector do
     {:reply, :ok, state}
   end
 
-  def collect(%{name: name, ticker: ticker, lots: lots, decision: decision, o: o, c: c, balance: balance}) do 
-    GenServer.call(__MODULE__, {:collect, {name, ticker, lots, decision, o, c, balance}})
+  def collect(%{name: name, ticker: ticker, lots: lots, decision: decision, o: o, c: c, balance: balance, date: date}) do 
+    GenServer.call(__MODULE__, {:collect, {name, ticker, lots, decision, o, c, balance}, date})
   end 
 
   def reset(name) do 
@@ -67,14 +68,14 @@ defmodule Trader.Historical.DecisionCollector do
     })
   end
 
-  defp log_file({_, _, _, :ignore, _, _, _} = x, _), do: x
+  defp log_file({_, _, _, :ignore, _, _, _} = x, _, _), do: x
 
-  defp log_file({name, ticker, lots, op, o, c, _} = x, suffix) do 
+  defp log_file({name, ticker, lots, op, o, c, _} = x, %{suffix: suffix, balance: balance}, date) do 
     File.mkdir_p!(@log_file_dir)
     name = @log_file_dir <> "/" <> name <> "_#{suffix}"
     File.touch!(name)
     content = File.read!(name)
-    File.write!(name, content <> "\n" <> "[#{ticker}] #{inspect op} for lots #{lots}, o: #{o}, c: #{c}")
+    File.write!(name, content <> "\n" <> "[#{DateTime.to_iso8601(date)}]: [#{ticker}] #{inspect op} for lots #{lots}, o: #{o}, c: #{c}, balance -> #{balance}")
     x
   end
 
