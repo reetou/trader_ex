@@ -63,7 +63,10 @@ defmodule Trader.Contexts.Algo do
       e -> raise "#{__MODULE__} Api error: #{inspect(e)}"
     end
     |> Enum.find(fn %{ticker: t} -> t == ticker end)
-    |> Map.fetch!(:balance)
+    |> case do 
+      nil -> 0
+      x -> Map.fetch!(x, :balance)
+    end
   end
 
   defp user_balance(user, currency) do 
