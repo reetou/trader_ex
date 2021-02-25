@@ -169,7 +169,8 @@ defmodule Trader.Contexts.User do
   end
 
   def add_algo(%{telegram_id: telegram_id, ticker: ticker, algo: algo}) when algo in ["buy_within"] do 
-    %{id: user_id} = by_telegram(telegram_id)
+    %{id: user_id} = user = by_telegram(telegram_id)
+    {:ok, _} = add_instrument(user, ticker)
     %{} = Schema.UserAlgo.create(%{user_id: user_id, ticker: ticker, balance_limit: 1000, algo: algo})
     :ok
   end
