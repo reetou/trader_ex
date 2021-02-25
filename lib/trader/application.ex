@@ -6,6 +6,7 @@ defmodule Trader.Application do
   use Application
   alias Trader.Telegram
   alias Trader.Contexts.Instruments
+  require Logger
 
   def start(_type, _args) do
     children = [
@@ -32,7 +33,9 @@ defmodule Trader.Application do
   end
 
   defp init do
+    Logger.info("Starting init stocks...")
     :ok = Instruments.fill_stocks()
     :ok = Instruments.fetch_watching_stocks_prices()
+    Logger.info("Init stocks finished.")
   end
 end
