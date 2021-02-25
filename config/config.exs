@@ -8,9 +8,9 @@ config :nadia,
 
 config :trader, Trader.Scheduler,
   jobs: [
-    # Every 2 seconds
+    # Every 15 seconds
     fetch_watching_stocks: [
-      schedule: {:extended, "*/2"},
+      schedule: {:extended, "*/15"},
       task: {Trader.Contexts.Instruments, :fetch_watching_stocks_prices, []},
     ],
     iterate_algos: [
