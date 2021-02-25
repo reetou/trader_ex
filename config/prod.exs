@@ -5,3 +5,9 @@ config :trader, Trader.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost"
+
+config :tinkoff_invest,
+  token: "mytoken",
+  broker_account_id: "mybroker",
+  mode: :sandbox,
+  logs_enabled: false
