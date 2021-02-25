@@ -14,7 +14,7 @@ config :trader, Trader.Scheduler,
       task: {Trader.Contexts.Instruments, :fetch_watching_stocks_prices, []},
     ],
     iterate_algos: [
-      schedule: "* * * * *",
+      schedule: "* 7-22 * * *",
       task: {Trader.Contexts.Algo, :iterate_all, []},
     ]
   ]

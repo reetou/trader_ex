@@ -7,6 +7,7 @@ defmodule Trader.Contexts.Algo do
   alias Trader.Contexts.Orders
   alias Trader.Contexts.DecisionExecutor
   alias Trader.Schema
+  alias Trader.Utils
   require Logger
 
   @algo_funs %{
@@ -14,12 +15,11 @@ defmodule Trader.Contexts.Algo do
   }
 
   def iterate_all do 
-    Logger.info("Starting iterate...")
-    Schema.UserAlgo.all_active()
-    |> Enum.map(fn %{ticker: ticker, algo: algo, user_id: user_id} -> 
-      %Schema.User{} = user = Schema.User.get(user_id)
-      iterate(user, "USD", ticker, algo)
-    end)
+    if Utils.can_trade?(DateTime.utc_now()) do 
+      do_iterate_all()
+    else
+      Logger.info("Cannot iterate, not trade hours yet.")  
+    end
   end
 
   def iterate(user, currency, ticker, algo) do 
@@ -38,6 +38,15 @@ defmodule Trader.Contexts.Algo do
     fun = Map.fetch!(@algo_funs, algo)
     bought_price = user_bought_price(user, ticker)
     fun.(instrument, lots, price, balance, now, bought_price)
+  end
+
+  defp do_iterate_all do 
+    Logger.info("Starting iterate...")
+    Schema.UserAlgo.all_active()
+    |> Enum.map(fn %{ticker: ticker, algo: algo, user_id: user_id} -> 
+      %Schema.User{} = user = Schema.User.get(user_id)
+      iterate(user, "USD", ticker, algo)
+    end)
   end
 
   defp user_bought_price(user, ticker) do 
