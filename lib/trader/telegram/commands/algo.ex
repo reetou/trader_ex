@@ -18,6 +18,8 @@ defmodule Trader.Telegram.Commands.Algo do
 
   #{@command} add AAPL buy_within
 
+  Когда алгоритм добавлен и активен, бот будет ежедневно торговать следуя выбранному алгоритму
+
   Список используемых алгоритмов и бумаг:
 
   #{@command} all
