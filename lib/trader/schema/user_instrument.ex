@@ -65,7 +65,6 @@ defmodule Trader.Schema.UserInstrument do
     __MODULE__
     |> select([i], [i.figi])
     |> distinct([:ticker])
-    |> limit(2)
     |> Repo.all()
     |> List.flatten()
   end
