@@ -33,9 +33,11 @@ defmodule Trader.Application do
   end
 
   defp init do
-    Logger.info("Starting init stocks...")
-    :ok = Instruments.fill_stocks()
-    :ok = Instruments.fetch_watching_stocks_prices()
-    Logger.info("Init stocks finished.")
+    if System.get_env("MIX_ENV") in ["prod", "dev"] do 
+      Logger.info("Starting init stocks...")
+      :ok = Instruments.fill_stocks()
+      :ok = Instruments.fetch_watching_stocks_prices()
+      Logger.info("Init stocks finished.")
+    end
   end
 end

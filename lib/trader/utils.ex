@@ -61,4 +61,60 @@ defmodule Trader.Utils do
       true -> false
     end
   end
+
+  @doc """
+  
+  Returns boolean whether can trade or not
+
+      iex>date = ~U[2021-02-25 06:55:16.144828Z]
+      ...>Trader.Utils.can_trade?(date)
+      false
+
+      iex>date = ~U[2021-02-25 07:01:16.144828Z]
+      ...>Trader.Utils.can_trade?(date)
+      true
+
+      iex>date = ~U[2021-02-25 15:55:16.144828Z]
+      ...>Trader.Utils.can_trade?(date)
+      true
+
+      iex>date = ~U[2021-02-25 22:39:46.144828Z]
+      ...>Trader.Utils.can_trade?(date)
+      true
+
+      iex>date = ~U[2021-02-25 22:41:16.144828Z]
+      ...>Trader.Utils.can_trade?(date)
+      false
+
+      iex>date = ~U[2021-02-26 15:55:16.144828Z]
+      ...>Trader.Utils.can_trade?(date) # Friday
+      true
+
+      iex>date = ~U[2021-02-27 15:55:16.144828Z]
+      ...>Trader.Utils.can_trade?(date) # Saturday
+      false
+
+      iex>date = ~U[2021-02-28 15:55:16.144828Z]
+      ...>Trader.Utils.can_trade?(date) # Sunday
+      false
+
+      iex>date = ~U[2021-03-01 15:55:16.144828Z]
+      ...>Trader.Utils.can_trade?(date) # Monday
+      true
+  """
+  def can_trade?(date) do 
+    trade_start = 
+      date
+      |> Timex.beginning_of_day()
+      |> Timex.shift(hours: 7)
+      |> Timex.shift(minutes: 1)
+
+    trade_end = 
+      date
+      |> Timex.beginning_of_day()
+      |> Timex.shift(hours: 23)
+      |> Timex.shift(minutes: -20)  
+
+    Timex.between?(date, trade_start, trade_end) and Timex.weekday(date) < 6
+  end
 end
